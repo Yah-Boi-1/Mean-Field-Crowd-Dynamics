@@ -1,0 +1,83 @@
+[NbConvertApp] Converting notebook mfg_crowd_dynamics.ipynb to notebook
+C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\zmq\_future.py:679: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+Starting kernel event loops.
+[NbConvertApp] ERROR | Timeout waiting for execute reply (1800s).
+Traceback (most recent call last):
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbclient\client.py", line 782, in _async_poll_for_reply
+    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\jupyter_core\utils\__init__.py", line 214, in ensure_async
+    result = await obj
+             ^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\jupyter_client\channels.py", line 230, in get_msg
+    raise Empty
+_queue.Empty
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\users\nickg\appdata\roaming\python\python311\scripts\jupyter-nbconvert.EXE\__main__.py", line 6, in <module>
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\jupyter_core\application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\traitlets\config\application.py", line 1075, in launch_instance
+    app.start()
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\exporters\exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\exporters\exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\exporters\notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\exporters\exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\exporters\exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\preprocessors\base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\preprocessors\execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbconvert\preprocessors\execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\nickg\AppData\Local\Programs\Python\Python311\Lib\asyncio\base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbclient\client.py", line 1005, in async_execute_cell
+    exec_reply = await self.task_poll_for_reply
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbclient\client.py", line 806, in _async_poll_for_reply
+    error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nickg\AppData\Roaming\Python\Python311\site-packages\nbclient\client.py", line 856, in _async_handle_timeout
+    raise CellTimeoutError.error_from_timeout_and_cell(
+nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 1800 seconds.
+The message was: Cell execution timed out.
+Here is a preview of the cell contents:
+-------------------
+['"""', '    sample_initial(S, m0, n; bbox, rng) -> Vector{Tuple{Float64,Float64}}', '', 'Rejection-sample n initial positions from the (unnormalized) density m0.', '"""']
+...
+['Random.seed!(42)', '@time traj_st = simulate_agents(sol; n_agents=100, stochastic=true)', 'println("simulated $(length(traj_st)) trajectories"); flush(stdout)', 'animate_agents(sol, traj_st; path=joinpath(OUTPUTS, "agents_stochastic.mp4"), nx=60, ny=60)', 'println("wrote agents_stochastic.mp4"); flush(stdout)']
+-------------------
+
+EXIT=1
