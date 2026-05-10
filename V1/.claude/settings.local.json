@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(julia --version)",
+      "Bash(julia -e 'using Pkg; Pkg.status\\(\\)')",
+      "Bash(julia -e 'using Pkg; Pkg.status\\(\\); println\\(\"---LOCAL---\"\\); cd\\(\"C:/Users/nickg/Documents/18.337/FinalProject\"\\); try; Pkg.activate\\(\".\"\\); Pkg.status\\(\\); catch e; println\\(e\\); end')",
+      "Bash(julia --project=. -e 'using Pkg; try; Pkg.add\\(\"Gridap\"\\); println\\(\"Gridap OK\"\\); catch e; println\\(\"FAIL Gridap: \", e\\); end')",
+      "Bash(julia --project=. -e 'using Pkg; for p in [\"GridapGmsh\",\"Gmsh\",\"CairoMakie\"]; try; Pkg.add\\(p\\); println\\(p, \" OK\"\\); catch e; println\\(\"FAIL \",p,\": \", e\\); end; end')",
+      "Bash(julia --project=. -e 'using Pkg; for p in [\"Gmsh\",\"IJulia\"]; try; Pkg.add\\(p\\); println\\(p, \" OK\"\\); catch e; println\\(\"FAIL \",p,\": \", e\\); end; end')",
+      "Bash(julia --project=. -e 'using Pkg; Pkg.status\\(\\)')",
+      "Bash(julia --project=. scratch/01_mesh.jl)",
+      "Bash(julia --project=. scratch/02_full_proto.jl)",
+      "Bash(grep -vE \"Info|^$\")",
+      "Bash(julia --project=. -e ' *)",
+      "Bash(julia --project=. scratch/03_full.jl)",
+      "Bash(tasklist)",
+      "Bash(taskkill /F /IM julia.exe)",
+      "Bash(taskkill /F /IM julialauncher.exe)",
+      "PowerShell(Get-Process *)",
+      "Bash(julia --project=. scratch/build_notebook.jl)",
+      "Bash(julia --project=. -e 'using Pkg; Pkg.add\\([\"JSON\",\"UUIDs\"]\\)')",
+      "Bash(jupyter --version)",
+      "Bash(jupyter kernelspec *)",
+      "Bash(python -c ' *)",
+      "Bash(jupyter nbconvert *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(julia --project=. scratch/build_tracer_notebook.jl)",
+      "Bash(julia --project=. scratch/debug_tracer.jl)",
+      "Bash(julia --project=. scratch/debug_tracer2.jl)",
+      "Bash(julia --project=. scratch/debug_tracer3.jl)",
+      "Bash(julia --project=. scratch/debug_tracer4.jl)",
+      "Bash(julia --project=. scratch/debug_tracer5.jl)",
+      "Bash(julia --project=. scratch/debug_tracer6.jl)"
+    ]
+  }
+}
