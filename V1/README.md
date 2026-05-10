@@ -1,13 +1,20 @@
-# Mean Field Games for Crowd Evacuation — Julia/Gridap notebook
+# Mean Field Games and Single-Agent Optimal Control — Julia/Gridap notebooks
 
-A single-notebook implementation of a 2D **second-order Mean Field Game**
-(coupled HJB ↔ Fokker–Planck) on an unstructured triangle mesh, with
-extensive pedagogical commentary, agent-level simulation, and animated
-visualization.
+This folder contains **two** companion Julia notebooks that share the same
+mesh / FEM stack but solve different problems:
 
-The math, derivations, and discussion live inside
-[`mfg_crowd_dynamics.ipynb`](mfg_crowd_dynamics.ipynb). This README
-just covers how to run it.
+1. [`mfg_crowd_dynamics.ipynb`](mfg_crowd_dynamics.ipynb) — a 2D **second-order
+   Mean Field Game** (coupled HJB ↔ Fokker–Planck) on an unstructured
+   triangle mesh, with population-level density evolution and Picard fixed
+   point.
+2. [`tracer_agent.ipynb`](tracer_agent.ipynb) — a **single-agent optimal
+   control** problem on the same domain. The agent navigates a *prescribed,
+   exogenous, time-independent* density field $m(x)$ to reach the exit,
+   following the optimal feedback derived from a backward HJB. **Not** an MFG
+   — there is one agent, no population dynamics, no fixed point.
+
+The math, derivations, and discussion live inside the notebooks. This README
+covers how to run them.
 
 ## Quick start
 
@@ -21,12 +28,14 @@ just covers how to run it.
    using IJulia
    notebook(dir=".")           # opens the Julia kernel in a browser tab
    ```
-   Then open `mfg_crowd_dynamics.ipynb` and Run All.
+   Then open `mfg_crowd_dynamics.ipynb` or `tracer_agent.ipynb` and Run All.
 
    Alternatively, headless run from the shell:
    ```bash
    jupyter nbconvert --to notebook --execute mfg_crowd_dynamics.ipynb \
        --output mfg_crowd_dynamics.ipynb --ExecutePreprocessor.timeout=1800
+   jupyter nbconvert --to notebook --execute tracer_agent.ipynb \
+       --output tracer_agent.ipynb --ExecutePreprocessor.timeout=900
    ```
 
 ## What the notebook does
@@ -69,6 +78,66 @@ All saved under `outputs/`:
 | `density_quiver.mp4`          | §9.2    | Animated density with $-\nabla u$ arrows   |
 | `agents_stochastic.mp4`       | §9.3    | 200 Lagrangian agents with σ>0             |
 | `agents_deterministic.mp4`    | §10     | 200 Lagrangian agents with σ=0             |
+
+## What `tracer_agent.ipynb` does
+
+* **§1 setup** — activates the local project; imports.
+* **§2 problem statement** — derives the HJB from dynamic programming,
+  documents the artificial-viscosity stability bound, and explains the
+  well-posedness condition $F(x_0) > 2L^2/T^2$ that makes the agent prefer
+  reaching the exit over lingering on the finite horizon.
+* **§3 mesh** — reuses `build_default_mesh` (unit square with right-wall
+  exit slit at $\{1\}\times[0.45,0.55]$), $h=0.05$.
+* **§4 density field $m(x)$** — five hard-coded Gaussian bumps on top of a
+  uniform baseline $m_{\text{base}}=8$. Documents why the spec's
+  $\int_\Omega m=1$ normalization is dropped (AM–GM forces $\langle\log m\rangle\le 0$,
+  destroying the agent's incentive to evacuate).
+* **§5 weak form / lagged linearization** — derives the backward
+  implicit-Euler weak form and the lag $|\nabla v^n|^2 \to \nabla v^{n+1}\!\cdot\!\nabla v^n$.
+* **§6 HJB solver** — `solve_tracer_hjb(model, m_field; T, N, σ_art, κ)`,
+  one linear solve per backward timestep.
+* **§7 trajectory integration** — `simulate_tracer(v_traj, x0)` does forward
+  Euler on $\dot x = -\nabla v(t,x)$ with linear-interpolation exit-crossing.
+* **§8 default solve and visualization** — solves with κ=1.0, σ_art=0.1,
+  T=1, N=40; produces $v(t,x)$ snapshots and the trajectory-over-density plot.
+* **§9 validation**:
+  * **9.1** Uniform-density sanity check: trajectory vs. analytical
+    straight-line travel time $\tau = L/\sqrt{2c_0}$.
+  * **9.2** Optimality identity: $v(0,x_0) = J(\alpha^\ast; x_0)$ along the
+    actual trajectory by trapezoidal quadrature.
+* **§10 discussion** — sensitivity of $\tau$ to $\sigma_{\text{art}}$ and
+  $\kappa$, limitations of forward Euler, and the explicit recipe for
+  extending the solver to time-dependent $m(t,x)$ via the `_density_at`
+  indirection.
+
+### Parameter deviations from the original spec, with reasoning
+
+| param | spec | used | reason |
+|---:|---:|---:|:---|
+| $\sigma_{\text{art}}$ | $10^{-3}$ | $0.1$ | Central-Galerkin without stabilization is unstable when cell Péclet $\gg 1$. With $h=0.05$ and $\vert\nabla v\vert\sim O(1)$, stability requires $\sigma_{\text{art}}^2 \gtrsim h\,\vert\nabla v\vert$. See §2.3 of the notebook. |
+| $\kappa$ | $0.1$ | $1.0$ | At $\kappa=0.1$ the running cost $F$ is too small for the agent to prefer reaching the exit over lingering. See §2.3 well-posedness derivation. |
+| $\int_\Omega m=1$ normalization | required | dropped | Combined with $\kappa=0.1$ this forces $\langle F\rangle\le 0$ via AM–GM. We use a uniform baseline $m_{\text{base}}=8$ instead. See §4. |
+
+The functional form $F = \kappa\log(m+\varepsilon)$, the geometry, the mesh,
+the boundary conditions, the time discretization, the lagging trick, and the
+output format all match the spec literally.
+
+### Generated artifacts (under `outputs/`)
+
+| File | Description |
+| --- | --- |
+| `tracer_room.msh` | Gmsh-generated mesh |
+| `tracer_mesh.png` | Triangulation with exit highlighted |
+| `tracer_density.png` | Heatmap of $m(x)$ |
+| `tracer_v_snapshots.png` | $v(t,x)$ at $t\in\{0, T/3, 2T/3, T\}$ |
+| `tracer_trajectory.png` | Agent trajectory over $m$, with $\tau$ in the title |
+| `tracer_validation_uniform.png` | Side-by-side: uniform vs. non-uniform density |
+
+### Expected run time for `tracer_agent.ipynb`
+
+After the MFG notebook has run once (so Gridap/Makie are precompiled), the
+tracer notebook runs end-to-end in **~30 seconds** on a modern laptop CPU.
+On a cold cache, allow an additional 2–3 minutes for first-time precompile.
 
 ## Package versions (pinned in `Project.toml` / `Manifest.toml`)
 
